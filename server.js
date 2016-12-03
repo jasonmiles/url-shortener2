@@ -14,14 +14,13 @@ var port = process.env.PORT || 8080;
 
 app.get('/new/*', function(req, res) {
   var url = req.originalUrl.substr(5)
-  var counter = 0;
 
   if( !validUrl.is_http_uri(url) ) {
-    res.send("Please enter valid URL")
+    res.send({'Error': 'Please enter a valid URL.'})
   }
   var MongoClient = mongodb.MongoClient;
 
-  var mongoUrl = 'mongodb://localhost:27017/url-shortener'
+  var mongoUrl = process.env.MONGOLAB_URI;
 
   MongoClient.connect(mongoUrl, function (err, db) {
     if (err) {
@@ -46,7 +45,7 @@ app.get('/new/*', function(req, res) {
         if(err) {
           console.log(err);
         } else {
-          res.send(result);
+          res.send({'original-url': url, 'shortened-url': 'http://www.xxx.com/' + count});
         }
       })
         db.close();
@@ -57,7 +56,30 @@ app.get('/new/*', function(req, res) {
   })
 })
 
+app.get('/*', function(req, res) {
+  var url = req.originalUrl.substr(1)
+  var MongoClient = mongodb.MongoClient;
 
+  var mongoUrl = process.env.MONGOLAB_URI;
+
+  MongoClient.connect(mongoUrl, function (err, db) {
+    if (err) {
+      console.log('Unable to connect to the Server', err);
+    } else {
+      console.log('Connected to server');
+      var collection = db.collection('urls');
+      collection.findOne({code: parseInt(url)}, function (err, documents) {
+        if(err) {
+          console.log(err);
+        } else if(!documents){
+          res.send({'Error': 'Please enter valid URL shortcode.'})
+        } else {
+          res.redirect(documents.url);
+        }
+      })
+    }
+  })
+})
 
 app.listen(port, function () {
   console.log('Example app listening on port ' + port)
