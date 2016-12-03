@@ -8,7 +8,6 @@ var app = express()
 
 var port = process.env.PORT || 8080;
 
-
 app.get('/new/*', function(req, res) {
   var url = req.originalUrl.substr(5)
 
@@ -42,7 +41,7 @@ app.get('/new/*', function(req, res) {
         if(err) {
           console.log(err);
         } else {
-          res.send({'original-url': url, 'shortened-url': 'http://www.xxx.com/' + count});
+          res.send({'original-url': url, 'shortened-url': 'https://ancient-cove-72945.herokuapp.com/' + count});
         }
       })
         db.close();
