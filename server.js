@@ -9,9 +9,6 @@ var app = express()
 var port = process.env.PORT || 8080;
 
 
-
-
-
 app.get('/new/*', function(req, res) {
   var url = req.originalUrl.substr(5)
 
